@@ -1,0 +1,75 @@
+import temporadaDescuentos.*
+import estim.*
+import criticos.*
+
+describe "tests descuentos"{
+	const juego1=new Juego(precioDolar=34)
+	const descDirectoDel10=new DescuentoDirecto(cantidadDeDescuento=10)
+	const descFijoDel60=new DescuentoFijo(cantidadDeDescuento=60)
+	
+	
+	
+	test "la plataforma aplica un descuento del 10 por ciento a un juego" {
+
+		estim.aplicarDescuento(juego1,descDirectoDel10)
+		assert.that(juego1.precioConDescuento()==30.6)
+
+	}
+
+	test "se le quiere aplicar un descuento mayor a la mitad con descuento fijo"{
+		estim.aplicarDescuento(juego1,descFijoDel60)
+		//lo maximo de descuento es la mitad del precio, aun si se piden descuentos mayores.
+		assert.that(juego1.precioConDescuento()==17)
+	}	
+	
+}
+
+describe "tests juegos"{
+	const juego1=new Juego(precioDolar=34)
+	const juego2=new Juego(precioDolar=60)
+	const juego3=new Juego(precioDolar=70)
+	const juego4=new Juego(precioDolar=90)
+	
+	method initialize(){
+		estim.agregarJuegos([juego1,juego2,juego3,juego4])
+	}
+	
+	test "aplicar descuento directo a los juegos que superan los tres cuartos del precio mas caro"{
+		estim.aplicarDescuentoDirectoACasiMasCaros(40)
+		assert.that(juego3.precioConDescuento()==42)
+		assert.that(juego4.precioConDescuento()==90)
+	}
+	test"el juego mas caro"{
+		assert.that(estim.elMasCaro()==juego4)
+	}
+}
+
+describe "tests criticos y legislacion de paises"{
+	const juego1=new Juego(precioDolar=34)
+	const juego2=new Juego(precioDolar=60)
+	const juego3=new Juego(precioDolar=70)
+	const pais1=new Pais(conversion=20)
+	const usuario1=new Usuario(estaPositivo=true)
+	const usuario2=new Usuario(estaPositivo=false)
+	const usuario3=new Usuario(estaPositivo=true)
+	
+	method initialize(){
+		juego1.agregarCaracteristicas([contenidoViolento,lenguajeInapropiado])
+		juego2.agregarCaracteristicas([contenidoAdulto, lenguajeInapropiado])
+		pais1.agregarProhibiciones([contenidoAdulto,lenguajeInapropiado,contenidoViolento])
+		usuario1.escribirCritica(juego1)
+		usuario2.escribirCritica(juego2)
+		usuario3.escribirCritica(juego3)
+	
+	}
+	test"juego 1 y 2 son inapropiados para el pais1, pero el 3 no"{
+		assert.notThat(juego1.esAptoParaMenoresDe(pais1))
+		assert.notThat(juego2.esAptoParaMenoresDe(pais1))
+		assert.that(juego3.esAptoParaMenoresDe(pais1))
+	}
+}
+
+
+
+
+
